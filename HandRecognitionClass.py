@@ -14,23 +14,25 @@ from provided contour.
 
 
 class HandRecognizer:
-
     def __init__(self):
         self.filter = Filter()
+
     """
     _getContour
     Takes frame, applies filter and extracts Contours from filtered frame.
     """
+
     def _getContour(self, frame):
         edges = self.filter.getEdges(frame)
-        _, contours, hierarchy = cv2.findContours(edges, cv2.RETR_CCOMP,
-                                                  cv2.CHAIN_APPROX_SIMPLE)
-        return contours, hierarchy
+        _, contours, _ = cv2.findContours(edges, cv2.RETR_CCOMP,
+                                          cv2.CHAIN_APPROX_SIMPLE)
+        return contours
 
     """
     _getIndexOfMaxContour
     gets the index of the largest contour in the buffer
     """
+
     @staticmethod
     def _getIndexOfMaxContour(contours):
         maxArea, index = 0, 0
@@ -45,6 +47,7 @@ class HandRecognizer:
     _isContourClosed
     Check if Contour is closed, if not, no gesture will be detected
     """
+
     @staticmethod
     def _isContourClosed(hierarchy, index):
         if hierarchy is not None:
@@ -56,9 +59,10 @@ class HandRecognizer:
     _getHandCenter
     get the center of the detected Hand. This is used to calculate movement.
     """
+
     @staticmethod
     def _getHandCenter(handContour):
-        M = cv2.moments(handContour)            #Moments (Flächenträgsheitsmomente)
+        M = cv2.moments(handContour)  # Moments (Flächenträgsheitsmomente)
         (_, radius) = cv2.minEnclosingCircle(handContour)
         if M["m00"] != 0:
             center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
@@ -69,7 +73,7 @@ class HandRecognizer:
     @staticmethod
     def _getApproximation(maxContour):
         epsilon = 0.01 * cv2.arcLength(maxContour, True)
-        handContour = cv2.approxPolyDP(maxContour,epsilon, True)
+        handContour = cv2.approxPolyDP(maxContour, epsilon, True)
         return handContour;
 
     """
@@ -77,6 +81,7 @@ class HandRecognizer:
     extracts convex hull and convexity defects
     NOT USED YET
     """
+
     @staticmethod
     def _getHullAndDefects(handContour):
         hullHandContour = cv2.convexHull(handContour, returnPoints=False)
@@ -91,26 +96,25 @@ class HandRecognizer:
     Extracts largest contour (assumed to be hand due to filtering) as well as moments
     and derived "center" of contour, and finds minimum enclosing circle and associated radius
     """
-    def _extractHand(self, contours, hierarchy):
+
+    def _extractHand(self, contours):
         indexOfMaxContour, area = self._getIndexOfMaxContour(contours)
-        contourClosed = self._isContourClosed(hierarchy, indexOfMaxContour)
         maxContour = contours[indexOfMaxContour]
         center, radius = self._getHandCenter(maxContour)
         handContour = self._getApproximation(maxContour)
-        return Hand(radius, contourClosed, center, maxContour, area)
+        return Hand(radius, center, maxContour, area)
 
     def getHand(self, frame):
-        contours, hierarchy = self._getContour(frame)
+        contours = self._getContour(frame)
         if contours:
-            return self._extractHand(contours, hierarchy)
+            return self._extractHand(contours)
         else:
             return None
 
 
 class Hand:
-    def __init__(self, radius, isClosedContour, center, contour, area):
+    def __init__(self, radius, center, contour, area):
         self.radius = radius
-        self.isClosedContour = isClosedContour
         self.center = center
         self.contour = contour
         self.area = area
