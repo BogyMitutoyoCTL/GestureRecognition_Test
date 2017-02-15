@@ -3,6 +3,7 @@ from FilterClass import *
 import cv2
 import sys
 import numpy as np
+import time
 
 """
 HandRecognizer Class

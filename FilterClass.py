@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-
+import time
 """
 Filter Class
 Provides methods to filter and smooth picture of neon gloved hand.
@@ -54,9 +54,17 @@ class Filter:
     Blurs frame and thresholds it with values to reduce back- and foreground noise
     """
     def _reduceNoise(self):
+        reftim = time.clock()
         med_blur_frame = cv2.medianBlur(self.neon_masked_frame, 15)  # Blur resulting masked Frame
+        time1 = time.clock()
         _, blur_frame_thresh = cv2.threshold(med_blur_frame, 0, 255, cv2.THRESH_BINARY)
+        time2 = time.clock()
         self.blur_frame_thresh = cv2.cvtColor(blur_frame_thresh, cv2.COLOR_BGR2GRAY)
+        time3 = time.clock()
+        print("blur: " + str(time1 - reftim))
+        print("threshold: " + str(time2 - time1))
+        print("cvt: " + str(time3 - time2))
+
 
     """
     _extractEdges
@@ -78,10 +86,19 @@ class Filter:
     When provided with a frame, filters Frame and extracts and returns edges.
     """
     def getEdges(self, frame):
+        refTime = time.clock()
         self.hsv_frame = self._cvtToHSV(frame)
+        tim1 = time.clock()
         self._maskFrame()
+        tim2 = time.clock()
         self._reduceNoise()
+        tim3 = time.clock()
         self._extractEdges()
+        tim4 = time.clock()
+        print("cvttohsv:" + str(tim1-refTime))
+        print("mask:" + str(tim2-tim1))
+        print("reduce:" + str(tim3-tim2))
+        print("edges:" + str(tim4-tim3))
         return self.neon_green_edges
 
     """
