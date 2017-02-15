@@ -1,6 +1,7 @@
 from collections import deque
 import cv2
 import numpy as np
+import sys
 
 """
 GestureRecognizer Class
@@ -24,18 +25,27 @@ class GestureRecognizer():
         x = []
         y = []
 
-        for i in np.arange(0, 10):
+        first_item_timestamp = self.handBuffer[0].timestamp
+        for i in np.arange(len(self.handBuffer)):
             x1 = self.handBuffer[i].center[0]
             y1 = self.handBuffer[i].center[1]
             if x1 is None or y1 is None:
                 return None, None
+            curtime = self.handBuffer[i].timestamp
+            if curtime > first_item_timestamp + 1:
+                print("gesture detected")
+                break
+
             x += [x1]
             y += [y1]
 
 
         m, b = np.polyfit(x, y, 1)
-        maxX = max(x)
-        minX = min(x)
+
+        index_end, maxX = self._getIndexOfMaxPoint(x)
+        index_start, minX = self._getIndexOfMinPoint(x)
+
+
 
         ptStart = (int(minX), int(m * minX + b))
         ptEnd = (int(maxX), int(m * maxX + b))
@@ -43,6 +53,26 @@ class GestureRecognizer():
         self.dX = (ptStart[0] - ptEnd[0]) * np.sign(x[0] - x[9])
         self.dY = np.abs((ptStart[1] - ptEnd[1])) * np.sign(y[9] - y[0]) 
         return ptStart, ptEnd
+
+    @staticmethod
+    def _getIndexOfMaxPoint(pointlist):
+        maxPoint, index = 0, 0
+        for i in range(len(pointlist)):
+            pt = pointlist[i]
+            if pt > maxPoint:
+                maxPoint = pt
+                index = i
+        return index, maxPoint
+
+    @staticmethod
+    def _getIndexOfMinPoint(pointlist):
+        minPoint, index = sys.maxsize, 0
+        for i in range(len(pointlist)):
+            pt = pointlist[i]
+            if pt < minPoint:
+                minPoint = pt
+                index = i
+        return index, minPoint
 
     def getDirection(self):
         if np.abs(self.dX) > np.abs(self.dY) and np.abs(self.dX) > 20:
@@ -54,14 +84,13 @@ class GestureRecognizer():
 
         return self.direction
 
-    #def getSize(self):
-
-
     def addHandToGestureBuffer(self, hand):
         if hand is not None:
             self.handBuffer.appendleft(hand)
         else:
             self.handBuffer.clear()
+
+
 
     def getGesture(self):
         if len(self.handBuffer) > 10:
