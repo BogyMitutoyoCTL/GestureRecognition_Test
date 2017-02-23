@@ -48,11 +48,11 @@ class HandRecognizer:
                     cnt = cv2.approxPolyDP(cnt, 0.01 * cv2.arcLength(cnt, True), True)
                     hull = cv2.convexHull(cnt)
                     cv2.drawContours(frame, [hull], 0, (0, 255, 0), 2)
-
+            #gesture
             for i in np.arange(1, len(pts)):
                 if pts[i] is None:
                     continue
-                if counter >= 10 and i == 1 and pts[-10] is not None:
+                if self.counter >= 10 and i == 1 and pts[-10] is not None:
 
                     dX = pts[-10][0] - pts[i][0]
                     dY = pts[-10][1] - pts[i][1]
