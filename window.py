@@ -8,6 +8,7 @@ from FilterClass import *
 from ColorRangePickerClass import *
 from EventClass import *
 from HandRecognitionClass import *
+from GestureRecognitionClass import *
 from PIL import Image, ImageTk
 
 
@@ -25,8 +26,16 @@ def OnColorChanged(lowerColor, upperColor):
 def show_frame():
     _, frame = cap.read()
     global mainWindowRefresh
-    frame, _ = hand.getFrameDrawing(filter.getContours(frame), frame)
-    img = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+    cts = filter.getContours(frame)
+    frame2, _ = hand.getFrameDrawing(cts, frame)
+    pts = hand.getPts(cts, frame)
+    direction = gesture.trackMovement(pts)
+
+    cv2.putText(frame2, direction, (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
+                0.65, (0, 0, 255), 3)
+
+
+    img = Image.fromarray(cv2.cvtColor(frame2, cv2.COLOR_BGR2RGB))
     imgtk = ImageTk.PhotoImage(image=img)
     imageContainer.imgtk = imgtk
     imageContainer.configure(image=imgtk)
@@ -45,6 +54,7 @@ cap = cv2.VideoCapture(0)
 filter = Filter(mapHSVTO255(lowerHSV), mapHSVTO255(upperHSV))
 root = Tk()
 hand = HandRecognizer()
+gesture = GestureRecognizer()
 colorChangedEvent = Event()
 imageContainer = Label(root)
 b = Button(root, text="set color range", command=button_change_color_range)
