@@ -5,10 +5,11 @@ import numpy as np
 import colorsys
 from numpy import interp
 from FilterClass import *
-from ColorRangePicker import *
+from ColorRangePickerClass import *
 from gestures import *
-from Event import *
+from EventClass import *
 from PIL import Image, ImageTk
+from CaptureClass import *
 
 
 def button_change_color_range():
@@ -20,7 +21,7 @@ def OnColorChanged(lowerColor, upperColor):
     upperHSV = upperColor
 
 def show_frame():
-    mask = filter.getMask()
+    mask = filter.getMask(cap.getHSVFrame())
     img = Image.fromarray(mask)
     imgtk = ImageTk.PhotoImage(image=img)
     imageContainer.imgtk = imgtk
@@ -33,7 +34,7 @@ def mapHSVTO255(HSVColor):
     V = int(interp(HSVColor[2], [1, 100], [0, 255]))
     return [H, S, V]
 
-cap = cv2.VideoCapture(0)
+cap = Capture()
 
 root = Tk()
 root.bind('<Escape>', lambda e: root.quit())
@@ -47,7 +48,7 @@ upperHSV = [151, 100, 100]
 colorChangedEvent = Event()
 colorChangedEvent.append(OnColorChanged)
 
-#filter = Filter(cap, mapHSVTO255(lowerHSV), mapHSVTO255(upperHSV))
+filter = Filter(mapHSVTO255(lowerHSV), mapHSVTO255(upperHSV))
 #show_frame()
 
 
