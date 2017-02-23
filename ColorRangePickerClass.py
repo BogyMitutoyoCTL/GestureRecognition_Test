@@ -57,7 +57,7 @@ class ColorRangePicker():
         self.w6.set(100)
         self.w6.grid(row=8, column=0, padx=20, sticky=N)
 
-        self.b = Button(self.root, text="apply new range", command=apply, width=150, height=1)
+        self.b = Button(self.root, text="apply new range", command=self.apply_changes, width=150, height=1)
         self.b.grid(row=9, column=0, columnspan=3, pady=10)
         self.imageLabel = Label(self.root)
         self.imageLabel.grid(row=0, column=2, rowspan=10, padx=10)
