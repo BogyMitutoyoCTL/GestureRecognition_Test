@@ -107,3 +107,9 @@ class ColorRangePicker():
         uppers = int(interp(self.upperHSV[1], [1, 100], [0, 255]))
         upperv = int(interp(self.upperHSV[2], [1, 100], [0, 255]))
         return [upperh, uppers, upperv]
+
+    def getLowerHsv(self):
+        upperh = int(interp(self.lowerHSV[0], [1, 360], [0, 179]))
+        uppers = int(interp(self.lowerHSV[1], [1, 100], [0, 255]))
+        upperv = int(interp(self.lowerHSV[2], [1, 100], [0, 255]))
+        return [upperh, uppers, upperv]

@@ -29,12 +29,12 @@ class Filter():
         self.neon_green_edges = cv2.Canny(self.blur_frame_thresh, 100, 200)  # Extract edges (should only be hand)
         _, self.contours, _ = cv2.findContours(self.neon_green_edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
-    def getContours(self, hsv_frame):
-        self.hsv_frame = hsv_frame
+    def getContours(self, frame):
+        self.hsv_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
         self.extractContours()
         return self.contours
 
-    def getMask(self, hsv_frame):
-        self.hsv_frame = hsv_frame
+    def getMask(self, frame):
+        self.hsv_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
         self._maskFrame()
         return self.neon_masked_frame
