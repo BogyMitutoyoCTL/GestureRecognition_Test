@@ -33,7 +33,6 @@ def mapHSVTO255(HSVColor):
     V = int(interp(HSVColor[2], [1, 100], [0, 255]))
     return [H, S, V]
 
-
 cap = cv2.VideoCapture(0)
 
 root = Tk()
@@ -48,10 +47,10 @@ upperHSV = [151, 100, 100]
 colorChangedEvent = Event()
 colorChangedEvent.append(OnColorChanged)
 
-filter = Filter(cap, mapHSVTO255(lowerHSV), mapHSVTO255(upperHSV))
-show_frame()
+#filter = Filter(cap, mapHSVTO255(lowerHSV), mapHSVTO255(upperHSV))
+#show_frame()
 
 
-hand = HandRecognizer()
+#hand = HandRecognizer()
 
 root.mainloop()
