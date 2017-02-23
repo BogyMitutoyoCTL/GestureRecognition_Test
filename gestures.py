@@ -25,8 +25,7 @@ class HandRecognizer:
 
         neon_green_mask = cv2.erode(neon_green_mask, None, iterations=2)  # maske verfeinern
         neon_green_mask = cv2.dilate(neon_green_mask, None, iterations=2)
-        neon_masked_frame = cv2.bitwise_and(frame, frame,
-                                            mask=neon_green_mask)  # neongrüne Bereiche werden gefiltert
+        neon_masked_frame = cv2.bitwise_and(frame, frame, mask=neon_green_mask)  # neongrüne Bereiche werden gefiltert
         med_blur_frame = cv2.medianBlur(neon_masked_frame, 15)  # Blur resulting masked Frame
         _, blur_frame_thresh = cv2.threshold(med_blur_frame, 70, 255, cv2.THRESH_BINARY)
         blur_frame_thresh = cv2.cvtColor(blur_frame_thresh, cv2.COLOR_BGR2GRAY)
@@ -49,11 +48,11 @@ class HandRecognizer:
                     cnt = cv2.approxPolyDP(cnt, 0.01 * cv2.arcLength(cnt, True), True)
                     hull = cv2.convexHull(cnt)
                     cv2.drawContours(frame, [hull], 0, (0, 255, 0), 2)
-
+            #gesture
             for i in np.arange(1, len(pts)):
                 if pts[i] is None:
                     continue
-                if counter >= 10 and i == 1 and pts[-10] is not None:
+                if self.counter >= 10 and i == 1 and pts[-10] is not None:
 
                     dX = pts[-10][0] - pts[i][0]
                     dY = pts[-10][1] - pts[i][1]
