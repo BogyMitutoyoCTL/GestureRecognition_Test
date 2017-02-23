@@ -1,77 +1,57 @@
 from tkinter import *
-from PIL import Image, ImageTk
+from collections import deque
 import cv2
 import numpy as np
-from matplotlib import pyplot as plt
+import colorsys
+from numpy import interp
+from FilterClass import *
+from ColorRangePicker import *
+from gestures import *
+from Event import *
+from PIL import Image, ImageTk
 
-root = Tk()
-root.bind('<Escape>', lambda e:root.quit())
-lmain = Label(root)
-lmain.pack()
-h_lower, s_lower, v_lower, h_upper, s_upper, v_upper = 42, 80, 160, 79, 255, 255
 
-h_l, s_l, v_l, h_h, s_h, v_h = IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar()
+def button_change_color_range():
+    ColorRangePicker(cap,colorChangedEvent)
 
-h_l_value = Entry(root, textvariable = h_l)
-s_l_value = Entry(root, textvariable = s_l)
-v_l_value = Entry(root, textvariable = v_l)
-h_h_value = Entry(root, textvariable = h_h)
-s_h_value = Entry(root, textvariable = s_h)
-v_h_value = Entry(root, textvariable = v_h)
+def OnColorChanged(lowerColor, upperColor):
+    global lowerHSV, upperHSV
+    lowerHSV = lowerColor
+    upperHSV = upperColor
 
-for x in (h_l_value, s_l_value, v_l_value, h_h_value, s_h_value, v_h_value):
-    x.pack(side=LEFT)
+def show_frame():
+    mask = filter.getMask()
+    img = Image.fromarray(mask)
+    imgtk = ImageTk.PhotoImage(image=img)
+    imageContainer.imgtk = imgtk
+    imageContainer.configure(image=imgtk)
+    imageContainer.after(10, show_frame)
 
-def apply():
-    h_lower = h_l.get()
-    s_lower = s_l.get()
-    v_lower = v_l.get()
-    h_upper = h_h.get()
-    s_upper = s_h.get()
-    v_upper = v_h.get()
+def mapHSVTO255(HSVColor):
+    H = int(interp(HSVColor[0], [1, 360], [0, 179]))
+    S = int(interp(HSVColor[1], [1, 100], [0, 255]))
+    V = int(interp(HSVColor[2], [1, 100], [0, 255]))
+    return [H, S, V]
 
-apply_button = Button(root, text = "Apply", command = apply)
-
-apply_button.pack()
 
 cap = cv2.VideoCapture(0)
 
-def extract_edges(frame, h_lower, s_lower, v_lower, h_upper, s_upper, v_upper):
-    hsv_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+root = Tk()
+root.bind('<Escape>', lambda e: root.quit())
+b = Button(root, text="set color range", command=button_change_color_range)
+b.pack()
 
-    low_neon_green = np.array([h_lower, s_lower, v_lower])  # von 360 deg
-    high_neon_green = np.array([h_upper, s_upper, v_upper])
+imageContainer = Label(root)
+imageContainer.pack()
+lowerHSV = [95, 25, 30]
+upperHSV = [151, 100, 100]
+colorChangedEvent = Event()
+colorChangedEvent.append(OnColorChanged)
 
-    neon_green_mask = cv2.inRange(hsv_frame, low_neon_green,
-                                  high_neon_green)  # alles was sich im neongrünen Farbbereich befindet
-
-    neon_green_mask = cv2.erode(neon_green_mask, None, iterations=2)  # maske verfeinern
-    neon_green_mask = cv2.dilate(neon_green_mask, None, iterations=2)
-
-    neon_masked_frame = cv2.bitwise_and(frame, frame, mask=neon_green_mask)  # neongrüne Bereiche werden gefiltert
-
-    med_blur_frame = cv2.medianBlur(neon_masked_frame, 15)  # Blur resulting masked Frame
-
-    _, blur_frame_thresh = cv2.threshold(med_blur_frame, 70, 255, cv2.THRESH_BINARY_INV)
-
-    neon_green_edges = cv2.Canny(blur_frame_thresh, 100, 200)  # Extract edges (should only be hand)
-
-    return neon_green_edges
-
-
-def show_frame():
-    _, frame = cap.read()
-
-    cv2image = extract_edges(frame, h_lower, s_lower, v_lower, h_upper, s_upper, v_upper)
-
-    img = Image.fromarray(cv2image)
-    imgtk = ImageTk.PhotoImage(image=img)
-    lmain.imgtk = imgtk
-    lmain.configure(image = imgtk)
-    lmain.after(10, show_frame)
-
-
+filter = Filter(cap, mapHSVTO255(lowerHSV), mapHSVTO255(upperHSV))
 show_frame()
 
+
+hand = HandRecognizer()
 
 root.mainloop()

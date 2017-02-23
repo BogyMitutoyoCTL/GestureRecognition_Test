@@ -100,9 +100,6 @@ class ColorRangePicker():
         self.updateUI = self.imageLabel.after(10, self.show_values)
 
     def getLowerHsv(self):
-        lowerh = int(interp(self.lowerHSV[0], [1, 360], [0, 179]))
-        lowers = int(interp(self.lowerHSV[1], [1, 100], [0, 255]))
-        lowerv = int(interp(self.lowerHSV[2], [1, 100], [0, 255]))
         return [lowerh, lowers, lowerv]
 
     def getUpperHsv(self):
