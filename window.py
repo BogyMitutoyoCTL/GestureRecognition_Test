@@ -49,9 +49,8 @@ colorChangedEvent = Event()
 colorChangedEvent.append(OnColorChanged)
 
 filter = Filter(mapHSVTO255(lowerHSV), mapHSVTO255(upperHSV))
-#show_frame()
 
-
+show_frame()
 #hand = HandRecognizer()
 
 root.mainloop()

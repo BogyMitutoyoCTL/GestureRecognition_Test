@@ -19,13 +19,13 @@ class Filter():
         self.neon_masked_frame = cv2.bitwise_and(self.hsv_frame, self.hsv_frame,
                                                  mask=neon_green_mask)  # neongrüne Bereiche werden gefiltert
     def _prepareFrame(self):
-        self.maskFrame()
+        self._maskFrame()
         med_blur_frame = cv2.medianBlur(self.neon_masked_frame, 15)  # Blur resulting masked Frame
         _, blur_frame_thresh = cv2.threshold(med_blur_frame, 70, 255, cv2.THRESH_BINARY)
         self.blur_frame_thresh = cv2.cvtColor(blur_frame_thresh, cv2.COLOR_BGR2GRAY)
 
     def _extractContours(self):
-        self.prepareFrame()
+        self._prepareFrame()
         self.neon_green_edges = cv2.Canny(self.blur_frame_thresh, 100, 200)  # Extract edges (should only be hand)
         _, self.contours, _ = cv2.findContours(self.neon_green_edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
@@ -36,5 +36,5 @@ class Filter():
 
     def getMask(self, hsv_frame):
         self.hsv_frame = hsv_frame
-        self.maskFrame()
+        self._maskFrame()
         return self.neon_masked_frame
