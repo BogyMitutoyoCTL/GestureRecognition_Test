@@ -3,14 +3,14 @@ import cv2
 import numpy as np
 
 class HandRecognizer():
-    def __init__(self, contours, frame, buffersize = 20):
-        self.contours = contours
-        self.frame = frame
+    def __init__(self, buffersize = 20):
+        self.contours = None
+        self.frame = None
         self.drawing = np.zeros(self.frame.shape, np.uint8)
         self.max_area = 0
         self.pts = deque(maxlen = buffersize)
 
-    def extractHand(self):
+    def _extractHand(self):
         if self.contours:
             cnt = max(self.contours, key=cv2.contourArea)
             ((x, y), radius) = cv2.minEnclosingCircle(cnt)
@@ -29,18 +29,26 @@ class HandRecognizer():
 
             self.main_contour = cnt
 
-    def getMainContour(self):
-        self.extractHand()
+    def getMainContour(self, contours, frame):
+        self.contours = contours
+        self.frame = frame
+        self._extractHand()
         return self.main_contour
 
-    def getHull(self):
-        self.extractHand()
+    def getHull(self, contours, frame):
+        self.contours = contours
+        self.frame = frame
+        self._extractHand()
         return self.hull
 
-    def getFrameDrawing(self):
-        self.extractHand()
+    def getFrameDrawing(self, contours, frame):
+        self.contours = contours
+        self.frame = frame
+        self._extractHand()
         return self.frame, self.drawing
 
-    def getPts(self):
-        self.extractHand()
+    def getPts(self, contours, frame):
+        self.contours = contours
+        self.frame = frame
+        self._extractHand()
         return self.pts
