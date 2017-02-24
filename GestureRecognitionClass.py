@@ -24,12 +24,12 @@ class GestureRecognizer():
 
                 # ensure there is significant movement in the
                 # x-direction
-                if np.abs(dX) > 20:
+                if np.abs(dX) > 30:
                     dirX = "East" if np.sign(dX) == 1 else "West"
 
                 # ensure there is significant movement in the
                 # y-direction
-                if np.abs(dY) > 20:
+                if np.abs(dY) > 30:
                     dirY = "North" if np.sign(dY) == 1 else "South"
 
                 # handle when both directions are non-empty

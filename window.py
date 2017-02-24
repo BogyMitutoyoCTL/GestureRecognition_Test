@@ -7,6 +7,7 @@ from FilterClass import *
 from ColorRangePickerClass import *
 from EventClass import *
 from HandRecognitionClass import *
+from FrameDrawingClass import *
 from GestureRecognitionClass import *
 from PIL import Image, ImageTk
 import Converter
@@ -29,8 +30,10 @@ def show_frame():
     global mainWindowRefresh
     _, frame = cap.read()
     cts = filter.getContours(frame)
-    frame2, _ = hand.getFrameDrawing(cts, frame)
-    pts = hand.getPts(cts, frame)
+    x, y, radius = hand.getCenterXYRadius(cts)
+    frame2 = draw.drawCircles(frame, x, y, radius)
+
+    pts = hand.getPts(cts)
     direction = gesture.trackMovement(pts)
 
     cv2.putText(frame2, direction, (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
@@ -58,6 +61,7 @@ imageContainer.pack()
 filter = Filter(Converter.mapHSVTO255(defaultLowerHSV), Converter.mapHSVTO255(defaultUpperHSV))
 hand = HandRecognizer()
 gesture = GestureRecognizer(20)
+draw = FrameDrawing()
 
 colorChangedEvent = Event()
 mainWindowRefresh = None
