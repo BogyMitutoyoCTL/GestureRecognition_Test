@@ -36,12 +36,15 @@ def show_frame():
     cv2.putText(frame2, direction, (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
                 0.65, (0, 0, 255), 3)
 
-    img = Image.fromarray(cv2.cvtColor(frame2, cv2.COLOR_BGR2RGB))
+    showFrameOnUI(frame2)
+    mainWindowRefresh = imageContainer.after(10, show_frame)
+
+
+def showFrameOnUI(frame):
+    img = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
     imgtk = ImageTk.PhotoImage(image=img)
     imageContainer.imgtk = imgtk
     imageContainer.configure(image=imgtk)
-    mainWindowRefresh = imageContainer.after(10, show_frame)
-
 
 defaultLowerHSV = [95, 25, 30]
 defaultUpperHSV = [151, 100, 100]
