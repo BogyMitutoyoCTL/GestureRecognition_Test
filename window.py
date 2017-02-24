@@ -57,7 +57,7 @@ b.pack()
 
 filter = Filter(Converter.mapHSVTO255(lowerHSV), Converter.mapHSVTO255(upperHSV))
 hand = HandRecognizer()
-gesture = GestureRecognizer()
+gesture = GestureRecognizer(20)
 
 colorChangedEvent = Event()
 mainWindowRefresh = None
