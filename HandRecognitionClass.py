@@ -8,6 +8,8 @@ class HandRecognizer():
         self.frame = None
         self.max_area = 0
         self.pts = deque(maxlen = buffersize)
+        for x in range(buffersize):
+            self.pts.appendleft((0,0))
 
     def _extractHand(self):
         self.drawing = np.zeros(self.frame.shape, np.uint8)
