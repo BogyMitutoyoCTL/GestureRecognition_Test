@@ -75,5 +75,4 @@ mainWindowRefresh = None
 colorChangedEvent.append(OnColorChanged)
 
 show_frame()
-
 root.mainloop()
