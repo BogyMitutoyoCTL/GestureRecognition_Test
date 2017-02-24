@@ -17,10 +17,11 @@ def button_change_color_range():
     if mainWindowRefresh is not None:
         imageContainer.after_cancel(mainWindowRefresh)
 
+
 def OnColorChanged(lowerColor, upperColor):
-    global lowerHSV, upperHSV
-    lowerHSV = lowerColor
-    upperHSV = upperColor
+    global defaultLowerHSV, defaultUpperHSV
+    defaultLowerHSV = lowerColor
+    defaultUpperHSV = upperColor
     show_frame()
 
 
@@ -42,20 +43,19 @@ def show_frame():
     mainWindowRefresh = imageContainer.after(10, show_frame)
 
 
-lowerHSV = [95, 25, 30]
-upperHSV = [151, 100, 100]
+defaultLowerHSV = [95, 25, 30]
+defaultUpperHSV = [151, 100, 100]
 
 cap = cv2.VideoCapture(0)
 
 root = Tk()
 root.bind('<Escape>', lambda e: root.quit())
-imageContainer = Label(root)
-imageContainer.pack()
 b = Button(root, text="set color range", command=button_change_color_range)
 b.pack()
+imageContainer = Label(root)
+imageContainer.pack()
 
-
-filter = Filter(Converter.mapHSVTO255(lowerHSV), Converter.mapHSVTO255(upperHSV))
+filter = Filter(Converter.mapHSVTO255(defaultLowerHSV), Converter.mapHSVTO255(defaultUpperHSV))
 hand = HandRecognizer()
 gesture = GestureRecognizer()
 
