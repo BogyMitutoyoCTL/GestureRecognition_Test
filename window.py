@@ -3,13 +3,13 @@ from collections import deque
 import cv2
 import numpy as np
 import colorsys
-from numpy import interp
 from FilterClass import *
 from ColorRangePickerClass import *
 from EventClass import *
 from HandRecognitionClass import *
 from GestureRecognitionClass import *
 from PIL import Image, ImageTk
+import Converter
 
 
 def button_change_color_range():
@@ -23,6 +23,7 @@ def OnColorChanged(lowerColor, upperColor):
     upperHSV = upperColor
     show_frame()
 
+
 def show_frame():
     global mainWindowRefresh
     _, frame = cap.read()
@@ -34,20 +35,12 @@ def show_frame():
     cv2.putText(frame2, direction, (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
                 0.65, (0, 0, 255), 3)
 
-
     img = Image.fromarray(cv2.cvtColor(frame2, cv2.COLOR_BGR2RGB))
     imgtk = ImageTk.PhotoImage(image=img)
     imageContainer.imgtk = imgtk
     imageContainer.configure(image=imgtk)
     mainWindowRefresh = imageContainer.after(10, show_frame)
 
-
-
-def mapHSVTO255(HSVColor):
-    H = int(interp(HSVColor[0], [1, 360], [0, 179]))
-    S = int(interp(HSVColor[1], [1, 100], [0, 255]))
-    V = int(interp(HSVColor[2], [1, 100], [0, 255]))
-    return [H, S, V]
 
 lowerHSV = [95, 25, 30]
 upperHSV = [151, 100, 100]
@@ -62,7 +55,7 @@ b = Button(root, text="set color range", command=button_change_color_range)
 b.pack()
 
 
-filter = Filter(mapHSVTO255(lowerHSV), mapHSVTO255(upperHSV))
+filter = Filter(Converter.mapHSVTO255(lowerHSV), Converter.mapHSVTO255(upperHSV))
 hand = HandRecognizer()
 gesture = GestureRecognizer()
 
