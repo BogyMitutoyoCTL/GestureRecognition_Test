@@ -1,6 +1,9 @@
 from numpy import interp
 import colorsys
 
+"""
+TODO: COMMENT
+"""
 def mapHSVTO255(HSVColor):
     H = int(interp(HSVColor[0], [1, 360], [0, 179]))
     S = int(interp(HSVColor[1], [1, 100], [0, 255]))

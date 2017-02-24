@@ -4,7 +4,10 @@ import numpy as np
 from PIL import Image, ImageTk
 import Converter
 
-
+"""
+ColorRangePicker Class
+TODO: COMMENT
+"""
 def drawRect(color, canvas):
     r = int(color[0])
     g = int(color[1])
