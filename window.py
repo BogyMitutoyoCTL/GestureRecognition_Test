@@ -37,10 +37,12 @@ def show_frame():
     frame2 = draw.drawCircles(frame, x, y, radius)
 
     pts = hand.getPts(cts)
-    direction = gesture.trackMovement(pts)
+    ptStart, ptEnd = gesture.getDirection(pts)
 
-    cv2.putText(frame2, direction, (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
-                0.65, (0, 0, 255), 3)
+    if ptStart is not None and ptEnd is not None:
+        cv2.line(frame2, ptStart, ptEnd, (0,0,255), 2)
+    #cv2.putText(frame2, direction, (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
+    #            0.65, (0, 0, 255), 3)
 
     showFrameOnUI(frame2)
 
@@ -67,7 +69,7 @@ imageContainer.pack()
 
 filter = Filter(Converter.mapHSVTO255(defaultLowerHSV), Converter.mapHSVTO255(defaultUpperHSV))
 hand = HandRecognizer()
-gesture = GestureRecognizer(20)
+gesture = GestureRecognizer()
 draw = FrameDrawing()
 
 colorChangedEvent = Event()

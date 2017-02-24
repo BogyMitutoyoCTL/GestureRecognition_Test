@@ -8,8 +8,6 @@ class HandRecognizer():
         self.center = 0,0
         self.max_area = 0
         self.pts = deque(maxlen = buffersize)
-        for x in range(buffersize):
-            self.pts.appendleft((0,0))
 
     def _extractHand(self):
         if self.contours:

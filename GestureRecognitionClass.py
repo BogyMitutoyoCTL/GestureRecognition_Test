@@ -4,11 +4,32 @@ import numpy as np
 
 
 class GestureRecognizer():
-    def __init__(self, maxlen):
+    def __init__(self):
         self.counter = 0
         (self.dX, self.dY) = (0, 0)
         self.direction = ""
         self.pts = None
+
+
+    def getDirection(self, points):
+        x = []
+        y = []
+
+        for i in np.arange(1, 11):
+            if points[i] is not None:
+                x += [points[i][0]]
+                y += [points[i][1]]
+            else:
+                return None, None
+
+        m, b = np.polyfit(x, y, 1)
+        maxX = max(x)
+        minX = min(x)
+
+        ptStart = (minX, m * minX + b)
+        ptEnd = (maxX, m * maxX + b)
+        return ptStart, ptEnd
+
 
 
     def trackMovement(self, pts):
