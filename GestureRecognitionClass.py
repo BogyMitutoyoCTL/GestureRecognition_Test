@@ -8,20 +8,21 @@ class GestureRecognizer():
         self.counter = 0
         (self.dX, self.dY) = (0, 0)
         self.direction = ""
-        self.pts = deque(maxlen=maxlen)
+        self.pts = None
 
 
     def trackMovement(self, pts):
-        self.pts = (pts)
-        for i in np.arange(1, len(self.pts)):
-            if self.pts[i] is None:
-                continue
-            if self.counter >= 10 and i == 1 and self.pts[-10] is not None:
+        self.pts = pts
 
+        for i in np.arange(1, len(self.pts)):
+            if self.pts[i] and self.pts[-10] is None:
+                continue
+            else:
                 dX = self.pts[-10][0] - self.pts[i][0]
                 dY = self.pts[-10][1] - self.pts[i][1]
                 (dirX, dirY) = ("", "")
 
+<<<<<<< HEAD
                 # ensure there is significant movement in the
                 # x-direction
                 if np.abs(dX) > 30:
@@ -37,10 +38,18 @@ class GestureRecognizer():
                     self.direction = "{}-{}".format(dirY, dirX)
 
                 # otherwise, only one direction is non-empty
+=======
+                if np.abs(dX) > np.abs(dY) and np.abs(dX) > 20:
+                    dirX = "East" if np.sign(dX) == 1 else "West"
+                elif np.abs(dX) < np.abs(dY) and np.abs(dY) > 20:
+                    dirY = "South" if np.sign(dY) == 1 else "North"
+>>>>>>> origin/master
                 else:
                     self.direction = dirX if dirX != "" else dirY
-        self.counter += 1
+
+                self.direction = dirX if dirX != "" else dirY
         return self.direction
+
 
 """
                 else:
