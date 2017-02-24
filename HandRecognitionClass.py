@@ -1,6 +1,5 @@
 from collections import deque
 import cv2
-import numpy as np
 
 class HandRecognizer():
     def __init__(self, buffersize = 20):

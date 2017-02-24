@@ -21,8 +21,6 @@ class GestureRecognizer():
                 dX = self.pts[-10][0] - self.pts[i][0]
                 dY = self.pts[-10][1] - self.pts[i][1]
                 (dirX, dirY) = ("", "")
-
-<<<<<<< HEAD
                 # ensure there is significant movement in the
                 # x-direction
                 if np.abs(dX) > 30:
@@ -38,12 +36,10 @@ class GestureRecognizer():
                     self.direction = "{}-{}".format(dirY, dirX)
 
                 # otherwise, only one direction is non-empty
-=======
                 if np.abs(dX) > np.abs(dY) and np.abs(dX) > 20:
                     dirX = "East" if np.sign(dX) == 1 else "West"
                 elif np.abs(dX) < np.abs(dY) and np.abs(dY) > 20:
                     dirY = "South" if np.sign(dY) == 1 else "North"
->>>>>>> origin/master
                 else:
                     self.direction = dirX if dirX != "" else dirY
 

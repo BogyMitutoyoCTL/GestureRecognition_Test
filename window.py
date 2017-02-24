@@ -29,8 +29,11 @@ def OnColorChanged(lowerColor, upperColor):
 def show_frame():
     global mainWindowRefresh
     _, frame = cap.read()
+
     cts = filter.getContours(frame)
+
     x, y, radius = hand.getCenterXYRadius(cts)
+
     frame2 = draw.drawCircles(frame, x, y, radius)
 
     pts = hand.getPts(cts)
@@ -40,6 +43,7 @@ def show_frame():
                 0.65, (0, 0, 255), 3)
 
     showFrameOnUI(frame2)
+
     mainWindowRefresh = imageContainer.after(10, show_frame)
 
 
