@@ -24,8 +24,8 @@ def OnColorChanged(lowerColor, upperColor):
     show_frame()
 
 def show_frame():
-    _, frame = cap.read()
     global mainWindowRefresh
+    _, frame = cap.read()
     cts = filter.getContours(frame)
     frame2, _ = hand.getFrameDrawing(cts, frame)
     pts = hand.getPts(cts, frame)
@@ -41,6 +41,8 @@ def show_frame():
     imageContainer.configure(image=imgtk)
     mainWindowRefresh = imageContainer.after(10, show_frame)
 
+
+
 def mapHSVTO255(HSVColor):
     H = int(interp(HSVColor[0], [1, 360], [0, 179]))
     S = int(interp(HSVColor[1], [1, 100], [0, 255]))
@@ -51,18 +53,23 @@ lowerHSV = [95, 25, 30]
 upperHSV = [151, 100, 100]
 
 cap = cv2.VideoCapture(0)
-filter = Filter(mapHSVTO255(lowerHSV), mapHSVTO255(upperHSV))
+
 root = Tk()
+root.bind('<Escape>', lambda e: root.quit())
+imageContainer = Label(root)
+imageContainer.pack()
+b = Button(root, text="set color range", command=button_change_color_range)
+b.pack()
+
+
+filter = Filter(mapHSVTO255(lowerHSV), mapHSVTO255(upperHSV))
 hand = HandRecognizer()
 gesture = GestureRecognizer()
-colorChangedEvent = Event()
-imageContainer = Label(root)
-b = Button(root, text="set color range", command=button_change_color_range)
 
+colorChangedEvent = Event()
 mainWindowRefresh = None
-root.bind('<Escape>', lambda e: root.quit())
 colorChangedEvent.append(OnColorChanged)
-b.pack()
-imageContainer.pack()
+
 show_frame()
+
 root.mainloop()
