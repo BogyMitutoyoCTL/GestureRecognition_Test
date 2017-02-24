@@ -12,7 +12,7 @@ class GestureRecognizer():
 
 
     def trackMovement(self, pts):
-
+        self.pts = (pts)
         for i in np.arange(1, len(self.pts)):
             if self.pts[i] is None:
                 continue
