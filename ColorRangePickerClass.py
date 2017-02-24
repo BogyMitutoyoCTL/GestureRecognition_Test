@@ -93,8 +93,8 @@ class ColorRangePicker():
 
     def getMask(self, frame):
         hsv_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-        low_neon_green = np.array(self.getLowerHsv())  # von 360 deg
-        high_neon_green = np.array(self.getUpperHsv())
+        low_neon_green = np.array(Converter.mapHSVTO255(self.lowerHSV))  # von 360 deg
+        high_neon_green = np.array(Converter.mapHSVTO255(self.upperHSV))
         neon_green_mask = cv2.inRange(hsv_frame, low_neon_green, high_neon_green)
         return neon_green_mask
 

@@ -33,18 +33,18 @@ def show_frame():
     cts = filter.getContours(frame)
 
     x, y, radius = hand.getCenterXYRadius(cts)
-
-    frame2 = draw.drawCircles(frame, x, y, radius)
+    #if x is not None and y is not None and radius is not None:
+        #frame = draw.drawCircles(frame, x, y, radius)
 
     pts = hand.getPts(cts)
     ptStart, ptEnd = gesture.getDirection(pts)
 
     if ptStart is not None and ptEnd is not None:
-        cv2.line(frame2, ptStart, ptEnd, (0,0,255), 2)
+        cv2.line(frame, ptStart, ptEnd, (0,0,255), 2)
     #cv2.putText(frame2, direction, (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
     #            0.65, (0, 0, 255), 3)
 
-    showFrameOnUI(frame2)
+    showFrameOnUI(frame)
 
     mainWindowRefresh = imageContainer.after(10, show_frame)
 

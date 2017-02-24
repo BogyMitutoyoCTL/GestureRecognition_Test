@@ -14,8 +14,9 @@ class GestureRecognizer():
     def getDirection(self, points):
         x = []
         y = []
-
-        for i in np.arange(1, 11):
+        if len(points) < 10:
+            return None, None
+        for i in np.arange(0, 10):
             if points[i] is not None:
                 x += [points[i][0]]
                 y += [points[i][1]]
@@ -26,8 +27,8 @@ class GestureRecognizer():
         maxX = max(x)
         minX = min(x)
 
-        ptStart = (minX, m * minX + b)
-        ptEnd = (maxX, m * maxX + b)
+        ptStart = (int(minX), int(m * minX + b))
+        ptEnd = (int(maxX), int(m * maxX + b))
         return ptStart, ptEnd
 
 

@@ -13,10 +13,10 @@ class HandRecognizer():
     hand movement. Initially, deque is filled with zeroes only
     """
     def __init__(self, buffersize = 20):
-        self.radius = 0
-        self.center = 0,0
+        self.radius = None
+        self.center = None, None
         self.max_area = 0
-        self.pts = deque(maxlen = buffersize)
+        self.pts = deque(maxlen=buffersize)
 
     """
     _extractHand
@@ -39,7 +39,13 @@ class HandRecognizer():
                     # adds current center to deque for tracking
                     self.pts.appendleft(self.center)
                     cnt = cv2.approxPolyDP(cnt, 0.01 * cv2.arcLength(cnt, True), True)
+            else:
+                self.center = None
+
             self.main_contour = cnt
+        else:
+            self.radius = None
+
 
     """
     getMainContour
