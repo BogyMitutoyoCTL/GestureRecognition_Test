@@ -57,7 +57,7 @@ imageContainer.pack()
 
 filter = Filter(Converter.mapHSVTO255(defaultLowerHSV), Converter.mapHSVTO255(defaultUpperHSV))
 hand = HandRecognizer()
-gesture = GestureRecognizer()
+gesture = GestureRecognizer(20)
 
 colorChangedEvent = Event()
 mainWindowRefresh = None

@@ -4,13 +4,14 @@ import numpy as np
 
 
 class GestureRecognizer():
-    def __init__(self):
+    def __init__(self, maxlen):
         self.counter = 0
         (self.dX, self.dY) = (0, 0)
         self.direction = ""
+        self.pts = deque(maxlen=maxlen)
+
 
     def trackMovement(self, pts):
-        self.pts = pts
 
         for i in np.arange(1, len(self.pts)):
             if self.pts[i] is None:
