@@ -40,11 +40,12 @@ class HandRecognizer():
                     self.pts.appendleft(self.center)
                     cnt = cv2.approxPolyDP(cnt, 0.01 * cv2.arcLength(cnt, True), True)
             else:
-                self.center = None
+                self.center = (None,None)
 
             self.main_contour = cnt
         else:
             self.radius = None
+            self.pts.clear()
 
 
     """

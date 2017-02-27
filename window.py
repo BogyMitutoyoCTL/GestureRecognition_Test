@@ -33,16 +33,17 @@ def show_frame():
     cts = filter.getContours(frame)
 
     x, y, radius = hand.getCenterXYRadius(cts)
-    #if x is not None and y is not None and radius is not None:
-        #frame = draw.drawCircles(frame, x, y, radius)
+    if x is not None and y is not None and radius is not None:
+        frame = draw.drawCircles(frame, x, y, radius)
 
     pts = hand.getPts(cts)
-    ptStart, ptEnd = gesture.getDirection(pts)
+    ptStart, ptEnd = gesture.getInterpolatedLine(pts)
+    direction = gesture.getDirection()
 
     if ptStart is not None and ptEnd is not None:
         cv2.line(frame, ptStart, ptEnd, (0,0,255), 2)
-    #cv2.putText(frame2, direction, (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
-    #            0.65, (0, 0, 255), 3)
+        cv2.putText(frame, direction, (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
+                0.65, (0, 0, 255), 3)
 
     showFrameOnUI(frame)
 
@@ -62,8 +63,10 @@ cap = cv2.VideoCapture(0)
 
 root = Tk()
 root.bind('<Escape>', lambda e: root.quit())
+
 b = Button(root, text="set color range", command=button_change_color_range)
 b.pack()
+
 imageContainer = Label(root)
 imageContainer.pack()
 

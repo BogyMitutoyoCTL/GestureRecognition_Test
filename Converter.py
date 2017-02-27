@@ -11,7 +11,7 @@ def mapHSVTO255(HSVColor):
     return [H, S, V]
 
 def hsv2rgb(h, s, v):
-    h = int(interp(h, [1, 360], [0, 1]))
-    s = int(interp(s, [1, 100], [0, 1]))
-    v = int(interp(v, [1, 100], [0, 1]))
+    h = interp(h, [1, 360], [0, 1])
+    s = interp(s, [1, 100], [0, 1])
+    v = interp(v, [1, 100], [0, 1])
     return tuple(int(i * 255) for i in colorsys.hsv_to_rgb(h, s, v))
