@@ -69,7 +69,9 @@ class ColorRangePicker():
         if self.refreshUI is not None:
             self.imageLabel.after_cancel(self.refreshUI)
             self.window.destroy()
-            self.colorChangedEvent(self.lowerHSV, self.upperHSV)
+            lower = Converter.mapHSVTO255(self.lowerHSV)
+            upper = Converter.mapHSVTO255(self.upperHSV)
+            self.colorChangedEvent(lower, upper)
 
     def startRoutine(self):
         _, frame = self.capture.read()
