@@ -23,6 +23,7 @@ def OnColorChanged(lowerColor, upperColor):
     global defaultLowerHSV, defaultUpperHSV
     defaultLowerHSV = lowerColor
     defaultUpperHSV = upperColor
+    filter.setColor(defaultLowerHSV, defaultUpperHSV)
     show_frame()
 
 
