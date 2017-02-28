@@ -14,23 +14,19 @@ class GestureRecognizer():
     def __init__(self):
         (self.dX, self.dY) = (0, 0)
         self.direction = ""
-        self.pts = None
+        self.handBuffer = deque(maxlen=20)
 
     """
     points: Array with center of mass points for the last few frames
     this function interpolates the points to a line and returns the starting and the end point
     """
-    def getInterpolatedLine(self, points):
+    def getInterpolatedLine(self):
         x = []
         y = []
-        if len(points) < 10:
-            return None, None
+
         for i in np.arange(0, 10):
-            if points[i] is not None:
-                x += [points[i][0]]
-                y += [points[i][1]]
-            else:
-                return None, None
+            x += [self.handBuffer[i].center[0]]
+            y += [self.handBuffer[i].center[1]]
 
         m, b = np.polyfit(x, y, 1)
         maxX = max(x)
@@ -40,7 +36,7 @@ class GestureRecognizer():
         ptEnd = (int(maxX), int(m * maxX + b))
 
         self.dX = (ptStart[0] - ptEnd[0]) * np.sign(x[0] - x[9])
-        self.dY =(ptStart[1] - ptEnd[1]) * np.sign(y[0] - y[9])
+        self.dY = (ptStart[1] - ptEnd[1]) * np.sign(y[0] - y[9])
         return ptStart, ptEnd
 
     def getDirection(self):
@@ -52,3 +48,26 @@ class GestureRecognizer():
             self.direction = ""
 
         return self.direction
+
+    def addHandToGestureBuffer(self, hand):
+        if hand is not None:
+            self.handBuffer.appendleft(hand)
+        else:
+            self.handBuffer.clear()
+
+    def getGesture(self):
+        if len(self.handBuffer) > 10:
+            currentHand = self.handBuffer[0]
+            if currentHand.isClosedContour:
+                ptStart, ptEnd = self.getInterpolatedLine()
+                direction = self.getDirection()
+                return Gesture(direction, ptStart, ptEnd)
+            else:
+                return Gesture("Hand not fully detected", None, None)
+
+
+class Gesture:
+    def __init__(self, status, startpoint, endpoint):
+        self.status = status
+        self.startpoint = startpoint
+        self.endpoint = endpoint
