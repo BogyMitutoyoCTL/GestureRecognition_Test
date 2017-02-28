@@ -57,15 +57,11 @@ class Filter():
         self.blur_frame_thresh = cv2.cvtColor(blur_frame_thresh, cv2.COLOR_BGR2GRAY)
 
     """
-    _extractContours
+    _extractEdges
     Uses Canny Edge Detection to extract edges from thresholded image.
-    Canny-filtered picture is fed into cv2.findContours() to get a hierarchical list of detected contours
     """
-    def _extractContours(self):
+    def _extractEdges(self):
         self.neon_green_edges = cv2.Canny(self.blur_frame_thresh, 100, 200)  # Extract edges (should only be hand)
-        _, self.contours, self.hierarchy = cv2.findContours(self.neon_green_edges, cv2.RETR_CCOMP,
-                                               cv2.CHAIN_APPROX_SIMPLE)
-
 
 
     """
@@ -76,15 +72,15 @@ class Filter():
         return cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
     """
-    getContours
-    When provided with a frame, filters Frame and extracts and returns contours.
+    getEdges
+    When provided with a frame, filters Frame and extracts and returns edges.
     """
-    def getContours(self, frame):
+    def getEdges(self, frame):
         self.hsv_frame = self._cvtToHSV(frame)
         self._maskFrame()
         self._reduceNoise()
-        self._extractContours()
-        return self.contours , self.hierarchy
+        self._extractEdges()
+        return self.neon_green_edges
 
     """
     getMask

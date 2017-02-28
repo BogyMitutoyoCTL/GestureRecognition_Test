@@ -1,4 +1,5 @@
 from collections import deque
+from FilterClass import *
 import cv2
 import sys
 import numpy as np
@@ -20,6 +21,16 @@ class HandRecognizer():
         self.max_area = 0
         self.pts = deque(maxlen=buffersize)
         self.closedcontour = False
+        self.filter = Filter()
+
+    """
+    _getContour
+    Takes frame, applies filter and extracts Contours from filtered frame.
+    """
+    def _getContour(self, frame):
+        edges = self.filter.getEdges(frame)
+        _, self.contours, self.hierarchy = cv2.findContours(edges, cv2.RETR_CCOMP,
+                                                            cv2.CHAIN_APPROX_SIMPLE)
 
     def _getIndexOfMaxContour(self, contours):
         maxArea, index = 0, 0
@@ -32,18 +43,18 @@ class HandRecognizer():
 
     """
     _extractHand
-    Can only be called by functions that provide contours.
+    Can only be called when _getContour has been called with frame first.
     Extracts largest contour (assumed to be hand due to filtering) as well as moments
     and derived "center" of contour, and finds minimum enclosing circle and associated radius
     """
-    def _extractHand(self, contours, hierarchy):
+    def _extractHand(self):
         # only starts if provided contours are nonempty
-        if contours:
+        if self.contours:
             # finds largest contour in provided contours
-            index = self._getIndexOfMaxContour(contours)
-            cnt = contours[index]
-            if hierarchy is not None:
-                self.closedcontour = False if hierarchy[0][index][2] < 0 else True
+            index = self._getIndexOfMaxContour(self.contours)
+            cnt = self.contours[index]
+            if self.hierarchy is not None:
+                self.closedcontour = False if self.hierarchy[0][index][2] < 0 else True
             handLen = cv2.arcLength(cnt, True)
             handContour = cv2.approxPolyDP(cnt, 0.001 * handLen, True)
             self.minX, self.minY, self.handWidth, self.handHeight = cv2.boundingRect(handContour)
@@ -76,22 +87,25 @@ class HandRecognizer():
     getMainContour
     Provides Largest found contour
     """
-    def getMainContour(self, contours):
-        self._extractHand(contours)
+    def getMainContour(self, frame):
+        self._getContour(frame)
+        self._extractHand()
         return self.main_contour
 
     """
     getCenterXYRadius
     provides X/Y-Coordinates and Radius of calculated "Center" of contour
     """
-    def getCenterXYRadius(self, contours, hierarchy):
-        self._extractHand(contours, hierarchy)
+    def getCenterXYRadius(self, frame):
+        self._getContour(frame)
+        self._extractHand()
         return self.center[0], self.center[1], self.radius
 
     """
     getPts
     provides positional data of hand in deque
     """
-    def getPts(self, contours, hierarchy):
-        self._extractHand(contours, hierarchy)
+    def getPts(self, frame):
+        self._getContour(frame)
+        self._extractHand()
         return self.pts

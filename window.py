@@ -79,7 +79,7 @@ b.pack()
 imageContainer = Label(root)
 imageContainer.pack()
 
-filter = Filter(Converter.mapHSVTO255(defaultLowerHSV), Converter.mapHSVTO255(defaultUpperHSV))
+
 hand = HandRecognizer()
 gesture = GestureRecognizer()
 draw = FrameDrawing()
