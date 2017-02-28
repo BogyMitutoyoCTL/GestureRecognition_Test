@@ -30,20 +30,28 @@ def show_frame():
     global mainWindowRefresh
     _, frame = cap.read()
 
-    cts = filter.getContours(frame)
+    cts, hierarchy = filter.getContours(frame)
 
-    x, y, radius = hand.getCenterXYRadius(cts)
-    if x is not None and y is not None and radius is not None:
-        frame = draw.drawCircles(frame, x, y, radius)
-
-    pts = hand.getPts(cts)
-    ptStart, ptEnd = gesture.getInterpolatedLine(pts)
-    direction = gesture.getDirection()
-
-    if ptStart is not None and ptEnd is not None:
-        cv2.line(frame, ptStart, ptEnd, (0,0,255), 2)
-        cv2.putText(frame, direction, (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
+    if cts:
+        x, y, radius = hand.getCenterXYRadius(cts, hierarchy)
+        if hand.closedcontour:
+            if x is not None and y is not None and radius is not None:
+                frame = draw.drawCircles(frame, x, y)
+            pts = hand.getPts(cts, hierarchy)
+            ptStart, ptEnd = gesture.getInterpolatedLine(pts)
+            direction = gesture.getDirection()
+            if ptStart is not None and ptEnd is not None:
+                cv2.line(frame, ptStart, ptEnd, (0,0,255), 2)
+                cv2.putText(frame, direction, (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
+                        0.65, (0, 0, 255), 3)
+        else:
+            cv2.putText(frame, "Hand not fully detected", (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
                 0.65, (0, 0, 255), 3)
+
+    else:
+        cv2.putText(frame, "No hand detected", (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
+                0.65, (0, 0, 255), 3)
+
 
     showFrameOnUI(frame)
 

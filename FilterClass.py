@@ -18,6 +18,7 @@ class Filter():
         self.lower_hsv = lower_hsv
         self.upper_hsv = upper_hsv
         self.setColor(self.lower_hsv, self.upper_hsv)
+        self.hierarchy = None
 
     """
     setColor
@@ -55,7 +56,7 @@ class Filter():
     """
     def _extractContours(self):
         self.neon_green_edges = cv2.Canny(self.blur_frame_thresh, 100, 200)  # Extract edges (should only be hand)
-        self.hierarchy, self.contours, self.hierarchy1 = cv2.findContours(self.neon_green_edges, cv2.RETR_TREE,
+        _, self.contours, self.hierarchy = cv2.findContours(self.neon_green_edges, cv2.RETR_CCOMP,
                                                cv2.CHAIN_APPROX_SIMPLE)
 
 
@@ -76,7 +77,7 @@ class Filter():
         self._maskFrame()
         self._reduceNoise()
         self._extractContours()
-        return self.contours
+        return self.contours , self.hierarchy
 
     """
     getMask
