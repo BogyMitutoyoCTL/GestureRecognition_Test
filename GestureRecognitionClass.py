@@ -52,38 +52,3 @@ class GestureRecognizer():
             self.direction = ""
 
         return self.direction
-
-    def trackMovement(self, pts):
-        self.pts = pts
-
-        for i in np.arange(1, len(self.pts)):
-            if self.pts[i] and self.pts[-10] is None:
-                continue
-            else:
-                self.dX = self.pts[-10][0] - self.pts[i][0]
-                self.dY = self.pts[-10][1] - self.pts[i][1]
-                (dirX, dirY) = ("", "")
-                # ensure there is significant movement in the
-                # x-direction
-                if np.abs(self.dX) > 30:
-                    dirX = "East" if np.sign(self.dX) == 1 else "West"
-
-                # ensure there is significant movement in the
-                # y-direction
-                if np.abs(self.dY) > 30:
-                    dirY = "North" if np.sign(self.dY) == 1 else "South"
-
-                # handle when both directions are non-empty
-                if dirX != "" and dirY != "":
-                    self.direction = "{}-{}".format(dirY, dirX)
-
-                # otherwise, only one direction is non-empty
-                if np.abs(self.dX) > np.abs(self.dY) and np.abs(self.dX) > 20:
-                    dirX = "East" if np.sign(self.dX) == 1 else "West"
-                elif np.abs(self.dX) < np.abs(self.dY) and np.abs(self.dY) > 20:
-                    dirY = "South" if np.sign(self.dY) == 1 else "North"
-                else:
-                    self.direction = dirX if dirX != "" else dirY
-
-                self.direction = dirX if dirX != "" else dirY
-        return self.direction
