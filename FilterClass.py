@@ -15,8 +15,8 @@ class Filter():
     """
     def __init__(self, lower_hsv=[95, 63, 77], upper_hsv=[151, 255, 255]):        #capture wird im Konstruktor übergeben
         self.hsv_frame = None
-        self.lower_hsv = lower_hsv
-        self.upper_hsv = upper_hsv
+        self.low_neon_green = lower_hsv
+        self.high_neon_green = upper_hsv
         self.setColor(self.lower_hsv, self.upper_hsv)
         self.hierarchy = None
 
@@ -28,6 +28,13 @@ class Filter():
     def setColor(self, lower_hsv, upper_hsv):
         self.low_neon_green = np.array(lower_hsv)  # von 360 deg
         self.high_neon_green = np.array(upper_hsv)
+
+    """
+    getColor
+    Used to get current color range.
+    """
+    def getColor(self):
+        return self.low_neon_green, self.high_neon_green
 
     """
     _maskFrame
