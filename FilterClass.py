@@ -17,7 +17,7 @@ class Filter():
         self.hsv_frame = None
         self.low_neon_green = lower_hsv
         self.high_neon_green = upper_hsv
-        self.setColor(self.lower_hsv, self.upper_hsv)
+        self.setColor(self.low_neon_green, self.high_neon_green)
         self.hierarchy = None
 
     """
