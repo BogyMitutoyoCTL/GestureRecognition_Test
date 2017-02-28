@@ -10,11 +10,11 @@ from HandRecognitionClass import HandRecognizer
 import Converter
 
 class Controller():
-    def __init__(self, camera=0):
+    def __init__(self):
         self.colorChangedEvent = Event()
         self.colorChangedEvent.append(self.OnColorChanged)
         self.mainWindowRefresh = None
-        self.capture = cv2.VideoCapture(camera)
+        self.capture = cv2.VideoCapture(0)
         self.HandRecognizer = HandRecognizer()
         self.GestureRecognizer = GestureRecognizer()
         self.FrameDrawing = FrameDrawing()
@@ -26,6 +26,7 @@ class Controller():
 
         self.initUI()
         self.routine()
+        self.tkinterWindow.mainloop()
 
     def initUI(self):
         self.tkinterWindow = Tk()
@@ -39,18 +40,20 @@ class Controller():
     def displayFrame(self, frame):
         img = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
         imgTk = ImageTk.PhotoImage(image=img)
-        self.imageContainer.imgTk = imgTk
+        self.imageContainer.imgtk = imgTk
         self.imageContainer.configure(image=imgTk)
 
     def routine(self):
         _, frame = self.capture.read()
 
         hand = self.HandRecognizer.getHand(frame)
-        frame = self.FrameDrawing.drawHand(frame, hand)
+        #if hand is not None:
+        #    frame = self.FrameDrawing.drawHand(frame, hand)
 
-        self.GestureRecognizer.addHandToGestureBuffer(hand)
-        gesture = self.GestureRecognizer.getGesture()
-        frame = self.FrameDrawing.drawGesture(frame, gesture)
+         #   self.GestureRecognizer.addHandToGestureBuffer(hand)
+         #   gesture = self.GestureRecognizer.getGesture()
+          #  if gesture is not None:
+          #      frame = self.FrameDrawing.drawGesture(frame, gesture)
 
         self.displayFrame(frame)
         self.mainWindowRefresh = self.imageContainer.after(10, self.routine)
@@ -64,4 +67,4 @@ class Controller():
         self.HandRecognizer.filter.setColor(lowerColor, upperColor)
         self.routine()
 
-Controller(0)
+Controller()

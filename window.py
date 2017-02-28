@@ -90,3 +90,4 @@ colorChangedEvent.append(OnColorChanged)
 
 show_frame()
 root.mainloop()
+root.ma
