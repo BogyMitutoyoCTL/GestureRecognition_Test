@@ -1,5 +1,6 @@
 from tkinter import *
 
+import time
 import cv2
 from PIL import Image, ImageTk
 
@@ -50,13 +51,15 @@ class Controller():
             self.FrameDrawing.drawHand(frame, hand)
             self.GestureRecognizer.addHandToGestureBuffer(hand)
             gesture = self.GestureRecognizer.getGesture()
-            if gesture is not None:
+            if gesture is not None and gesture.startpoint is not None and gesture.endpoint is not None:
                 self.FrameDrawing.drawGesture(frame, gesture)
         else:
             self.FrameDrawing.putText(frame, "No hand detected")
 
         self.displayFrame(frame)
         self.mainWindowRefresh = self.imageContainer.after(10, self.routine)
+
+        print(time.time())
 
     def button_changeColorRange(self):
         ColorRangePicker(self.capture, self.colorChangedEvent)

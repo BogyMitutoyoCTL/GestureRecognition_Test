@@ -39,7 +39,7 @@ class HandRecognizer:
             if area > maxArea:
                 maxArea = area
                 index = i
-        return index
+        return index, maxArea
 
     @staticmethod
     def _isContourClosed(hierarchy, index):
@@ -84,12 +84,12 @@ class HandRecognizer:
     and derived "center" of contour, and finds minimum enclosing circle and associated radius
     """
     def _extractHand(self, contours, hierarchy):
-        indexOfMaxContour = self._getIndexOfMaxContour(contours)
+        indexOfMaxContour, area = self._getIndexOfMaxContour(contours)
         contourClosed = self._isContourClosed(hierarchy, indexOfMaxContour)
         maxContour = contours[indexOfMaxContour]
         center, radius = self._getHandCenter(maxContour)
         handContour = self._getApproximation(maxContour)
-        return Hand(radius, contourClosed, center, maxContour)
+        return Hand(radius, contourClosed, center, maxContour, area)
 
     def getHand(self, frame):
         contours, hierarchy = self._getContour(frame)
@@ -100,11 +100,12 @@ class HandRecognizer:
 
 
 class Hand:
-    def __init__(self, radius, isClosedContour, center, contour):
+    def __init__(self, radius, isClosedContour, center, contour, area):
         self.radius = radius
         self.isClosedContour = isClosedContour
         self.center = center
         self.contour = contour
+        self.area = area
 
 
 if __name__ == "__main__":

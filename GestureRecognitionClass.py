@@ -25,8 +25,13 @@ class GestureRecognizer():
         y = []
 
         for i in np.arange(0, 10):
-            x += [self.handBuffer[i].center[0]]
-            y += [self.handBuffer[i].center[1]]
+            x1 = self.handBuffer[i].center[0]
+            y1 = self.handBuffer[i].center[1]
+            if x1 is None or y1 is None:
+                return None, None
+            x += [x1]
+            y += [y1]
+
 
         m, b = np.polyfit(x, y, 1)
         maxX = max(x)
@@ -48,6 +53,9 @@ class GestureRecognizer():
             self.direction = ""
 
         return self.direction
+
+    #def getSize(self):
+
 
     def addHandToGestureBuffer(self, hand):
         if hand is not None:
