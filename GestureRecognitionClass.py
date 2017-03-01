@@ -36,7 +36,7 @@ class GestureRecognizer():
         ptEnd = (int(maxX), int(m * maxX + b))
 
         self.dX = (ptStart[0] - ptEnd[0]) * np.sign(x[0] - x[9])
-        self.dY = (ptStart[1] - ptEnd[1]) * np.sign(y[0] - y[9])
+        self.dY = np.abs((ptStart[1] - ptEnd[1])) * np.sign(y[9] - y[0]) 
         return ptStart, ptEnd
 
     def getDirection(self):

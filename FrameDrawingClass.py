@@ -16,9 +16,9 @@ class FrameDrawing():
     """
 
     def drawCircles(self, frame, x, y, radius=0):
-        cv2.circle(frame, (x, y), 5, [0, 0, 255], 2)
-        cv2.circle(frame, (x, y), int(radius), (0, 255, 255), 2)
-        return frame
+        if x is not None and y is not None and radius is not None:
+            cv2.circle(frame, (x, y), 5, [0, 0, 255], 2)
+            cv2.circle(frame, (x, y), int(radius), (0, 255, 255), 2)
 
     """
     drawContours
@@ -28,14 +28,11 @@ class FrameDrawing():
     """
 
     def drawContours(self, frame, main_contour):
-        drawing = np.zeros(frame.shape, np.uint8)
-        cv2.drawContours(drawing, [main_contour], 0, (0, 255, 0), 2)
-        return drawing
+        cv2.drawContours(frame, [main_contour], 0, (0, 255, 0), 2)
 
     def putText(self, frame, text):
         cv2.putText(frame, text, (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
                     0.65, (0, 0, 255), 3)
-        return frame
 
     def drawLine(self, frame, startpoint, endpoint):
         cv2.line(frame, startpoint, endpoint, (0, 255, 0), 2)

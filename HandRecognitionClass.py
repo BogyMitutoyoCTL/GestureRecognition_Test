@@ -29,7 +29,6 @@ class HandRecognizer:
         edges = self.filter.getEdges(frame)
         _, contours, hierarchy = cv2.findContours(edges, cv2.RETR_CCOMP,
                                                   cv2.CHAIN_APPROX_SIMPLE)
-        cv2.drawContours(frame,contours,-1,(255,255,255),3)
         return contours, hierarchy
 
     @staticmethod
@@ -90,12 +89,12 @@ class HandRecognizer:
         maxContour = contours[indexOfMaxContour]
         center, radius = self._getHandCenter(maxContour)
         handContour = self._getApproximation(maxContour)
-        return Hand(radius, contourClosed, center, handContour)
+        return Hand(radius, contourClosed, center, maxContour)
 
     def getHand(self, frame):
         contours, hierarchy = self._getContour(frame)
         if contours:
-            return self._extractHand(contours,hierarchy)
+            return self._extractHand(contours, hierarchy)
         else:
             return None
 

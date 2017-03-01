@@ -13,7 +13,7 @@ class Filter():
     Constructor takes arguments for lower and upper value of color to filter.
     Also sets initial color range, which can be changed later via setColor()-Method
     """
-    def __init__(self, lower_hsv=[95, 63, 77], upper_hsv=[151, 255, 255]):        #capture wird im Konstruktor übergeben
+    def __init__(self, lower_hsv=[46, 61, 36], upper_hsv=[74, 255, 255]):        #capture wird im Konstruktor übergeben
         self.hsv_frame = None
         self.low_neon_green = lower_hsv
         self.high_neon_green = upper_hsv

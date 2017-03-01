@@ -47,13 +47,14 @@ class Controller():
         _, frame = self.capture.read()
 
         hand = self.HandRecognizer.getHand(frame)
-        #if hand is not None:
-        #    frame = self.FrameDrawing.drawHand(frame, hand)
-
-         #   self.GestureRecognizer.addHandToGestureBuffer(hand)
-         #   gesture = self.GestureRecognizer.getGesture()
-          #  if gesture is not None:
-          #      frame = self.FrameDrawing.drawGesture(frame, gesture)
+        if hand is not None:
+            self.FrameDrawing.drawHand(frame, hand)
+            self.GestureRecognizer.addHandToGestureBuffer(hand)
+            gesture = self.GestureRecognizer.getGesture()
+            if gesture is not None:
+                self.FrameDrawing.drawGesture(frame, gesture)
+        else:
+            self.FrameDrawing.putText(frame,"No hand detected")
 
         self.displayFrame(frame)
         self.mainWindowRefresh = self.imageContainer.after(10, self.routine)
