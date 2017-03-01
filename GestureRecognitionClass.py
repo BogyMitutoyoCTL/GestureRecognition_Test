@@ -71,3 +71,7 @@ class Gesture:
         self.status = status
         self.startpoint = startpoint
         self.endpoint = endpoint
+
+
+if __name__ == "__main__":
+    print("Nothing to run here. Please run ControllerClass.")

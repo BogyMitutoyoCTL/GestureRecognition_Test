@@ -44,3 +44,7 @@ class FrameDrawing():
     def drawGesture(self, frame, gesture):
         self.putText(frame, gesture.status)
         self.drawLine(frame,gesture.startpoint, gesture.endpoint)
+
+
+if __name__ == "__main__":
+    print("Nothing to run here. Please run ControllerClass.")

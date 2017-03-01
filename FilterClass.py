@@ -7,7 +7,9 @@ Provides methods to filter and smooth picture of neon gloved hand.
 Filtering steps are split into fitting methods.
 These methods could have added params to fine tune filtering steps.
 """
-class Filter():
+
+
+class Filter:
     """
     Constructor
     Constructor takes arguments for lower and upper value of color to filter.
@@ -90,3 +92,7 @@ class Filter():
         self.hsv_frame = self._cvtToHSV(frame)
         self._maskFrame()
         return self.neon_masked_frame
+
+
+if __name__ == "__main__":
+    print("Nothing to run here. Please run ControllerClass.")

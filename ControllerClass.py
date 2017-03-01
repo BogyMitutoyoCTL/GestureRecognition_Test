@@ -1,32 +1,31 @@
-import cv2
 from tkinter import *
+
+import cv2
 from PIL import Image, ImageTk
+
 from ColorRangePickerClass import ColorRangePicker
 from EventClass import Event
-from FilterClass import Filter
 from FrameDrawingClass import FrameDrawing
 from GestureRecognitionClass import GestureRecognizer
 from HandRecognitionClass import HandRecognizer
-import Converter
+
 
 class Controller():
     def __init__(self):
         self.colorChangedEvent = Event()
-        self.colorChangedEvent.append(self.OnColorChanged)
+        self.colorChangedEvent.append(self.onColorChanged)
         self.mainWindowRefresh = None
         self.capture = cv2.VideoCapture(0)
         self.HandRecognizer = HandRecognizer()
         self.GestureRecognizer = GestureRecognizer()
         self.FrameDrawing = FrameDrawing()
 
-        #UI-Elements:
+        # UI-Elements:
         self.tkinterWindow = None
         self.colorPickerButton = None
         self.imageContainer = None
 
         self.initUI()
-        self.routine()
-        self.tkinterWindow.mainloop()
 
     def initUI(self):
         self.tkinterWindow = Tk()
@@ -54,7 +53,7 @@ class Controller():
             if gesture is not None:
                 self.FrameDrawing.drawGesture(frame, gesture)
         else:
-            self.FrameDrawing.putText(frame,"No hand detected")
+            self.FrameDrawing.putText(frame, "No hand detected")
 
         self.displayFrame(frame)
         self.mainWindowRefresh = self.imageContainer.after(10, self.routine)
@@ -64,8 +63,11 @@ class Controller():
         if self.mainWindowRefresh is not None:
             self.imageContainer.after_cancel(self.mainWindowRefresh)
 
-    def OnColorChanged(self, lowerColor, upperColor):
+    def onColorChanged(self, lowerColor, upperColor):
         self.HandRecognizer.filter.setColor(lowerColor, upperColor)
         self.routine()
 
-Controller()
+if __name__ == "__main__":
+    controller = Controller()
+    controller.routine()
+    controller.tkinterWindow.mainloop()

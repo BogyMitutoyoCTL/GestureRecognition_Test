@@ -105,3 +105,7 @@ class Hand:
         self.isClosedContour = isClosedContour
         self.center = center
         self.contour = contour
+
+
+if __name__ == "__main__":
+    print("Nothing to run here. Please run ControllerClass.")

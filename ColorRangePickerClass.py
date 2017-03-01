@@ -108,3 +108,6 @@ class ColorRangePicker():
         imgtk = ImageTk.PhotoImage(image=img)
         self.imageLabel.imgtk = imgtk
         self.imageLabel.configure(image=imgtk)
+
+if __name__ == "__main__":
+    print("Nothing to run here. Please run ControllerClass.")
