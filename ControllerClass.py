@@ -108,7 +108,7 @@ class Controller:
             self.imageContainer.after_cancel(self.mainWindowRefresh)
 
     def onColorChanged(self, lowerColor, upperColor):
-        self.HandRecognizer.filter.setColor(lowerColor, upperColor)
+        self.HandRecognizer.filter.set_color_range(lowerColor, upperColor)
         self.process_frame_loop()
 
     def onGestureRecognized(self, gestureName):

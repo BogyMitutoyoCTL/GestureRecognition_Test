@@ -3,50 +3,57 @@ import cv2
 import numpy as np
 import sys
 
+MINGESTURELENGTH_INFRAMES = 10
+
+MAXQUEUELENGTH = 20
+
 """
 GestureRecognizer Class
 Provides functionality to analyze hand movements and recognize gestures
 """
-class GestureRecognizer():
+
+
+class GestureRecognizer:
     """
     Constructor
-
     """
+
     def __init__(self, resolution, onGestureRecognizedEvent):
         self.resolution = resolution
         (self.dX, self.dY) = (0, 0)
         self.direction = ""
-        self.handBuffer = deque(maxlen=20)
+        self.handBuffer = deque(maxlen=MAXQUEUELENGTH)
         self.onGestureRecognized = onGestureRecognizedEvent
 
     """
     points: Array with center of mass points for the last few frames
     this function interpolates the points to a line and returns the starting and the end point
     """
+
     def getInterpolatedLine(self):
+        # TODO: is it possible to use
+        # points = []
+        # and then add points to the array as (x, y)?
         x = []
         y = []
         index = 0
-        first_item_timestamp = self.handBuffer[0].timestamp
+        now = self.handBuffer[0].timestamp
         for i in np.arange(len(self.handBuffer)):
             x1 = self.handBuffer[i].center[0]
             y1 = self.handBuffer[i].center[1]
             if x1 is None or y1 is None:
                 return None, None
-            curtime = self.handBuffer[i].timestamp
+            time_in_past = self.handBuffer[i].timestamp
             x += [x1]
             y += [y1]
-            if curtime < first_item_timestamp - 1:
+            if time_in_past < now - 1:
                 index = i
                 break
-
 
         m, b = np.polyfit(x, y, 1)
 
         index_end, maxX = self._getIndexOfMaxPoint(x)
         index_start, minX = self._getIndexOfMinPoint(x)
-
-
 
         ptStart = (int(minX), int(m * minX + b))
         ptEnd = (int(maxX), int(m * maxX + b))
@@ -84,7 +91,6 @@ class GestureRecognizer():
             self.direction = ""
         return self.direction
 
-
     def addHandToGestureBuffer(self, hand):
         self.handBuffer.appendleft(hand)
 
@@ -92,14 +98,10 @@ class GestureRecognizer():
         self.handBuffer.clear()
 
     def getGesture(self):
-        if len(self.handBuffer) > 10:
-            currentHand = self.handBuffer[0]
-            if currentHand.isClosedContour:
-                ptStart, ptEnd = self.getInterpolatedLine()
-                direction = self.getDirection()
-                return Gesture(direction, ptStart, ptEnd)
-            else:
-                return Gesture("Hand not fully detected", None, None)
+        if len(self.handBuffer) > MINGESTURELENGTH_INFRAMES:
+            ptStart, ptEnd = self.getInterpolatedLine()
+            direction = self.getDirection()
+            return Gesture(direction, ptStart, ptEnd)
 
 
 class Gesture:

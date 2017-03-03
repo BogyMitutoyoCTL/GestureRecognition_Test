@@ -13,21 +13,18 @@ class Filter:
     """
     Constructor
     Constructor takes arguments for lower and upper value of color to filter.
-    Also sets initial color range, which can be changed later via setColor()-Method
     """
-    def __init__(self, lower_hsv=[46, 61, 36], upper_hsv=[74, 255, 255]):        #capture wird im Konstruktor übergeben
+    def __init__(self, lower_hsv=(46, 61, 36), upper_hsv=(74, 255, 255)):
         self.hsv_frame = None
-        self.low_neon_green = lower_hsv
-        self.high_neon_green = upper_hsv
-        self.setColor(self.low_neon_green, self.high_neon_green)
-        self.hierarchy = None
+        self.low_neon_green = None
+        self.high_neon_green = None
+        self.set_color_range(lower_hsv, upper_hsv)
 
     """
     setColor
     Used to set color range to filter from frame.
-    Called when class is constructed.
     """
-    def setColor(self, lower_hsv, upper_hsv):
+    def set_color_range(self, lower_hsv, upper_hsv):
         self.low_neon_green = np.array(lower_hsv)  # von 360 deg
         self.high_neon_green = np.array(upper_hsv)
 
@@ -57,12 +54,14 @@ class Filter:
         med_blur_frame = cv2.medianBlur(self.neon_masked_frame, 15)  # Blur resulting masked Frame
         _, blur_frame_thresh = cv2.threshold(med_blur_frame, 0, 255, cv2.THRESH_BINARY)
 
-        
-        xsize = blur_frame_thresh[0].size
-        ysize = int(blur_frame_thresh.size / xsize)
-        black = (0, 0, 0)
-        cv2.rectangle(blur_frame_thresh, (0,0), (xsize-1, ysize-1), black, 10)
+        self.draw_black_line_to_ensure_that_contours_will_be_closed(blur_frame_thresh)
         self.blur_frame_thresh = cv2.cvtColor(blur_frame_thresh, cv2.COLOR_BGR2GRAY)
+
+    def draw_black_line_to_ensure_that_contours_will_be_closed(self, blur_frame_thresh):
+        width = blur_frame_thresh[0].size
+        height = int(blur_frame_thresh.size / width)
+        black = (0, 0, 0)
+        cv2.rectangle(blur_frame_thresh, (0, 0), (width - 1, height - 1), black, thickness=1)
 
     """
     _extractEdges
