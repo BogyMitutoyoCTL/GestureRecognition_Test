@@ -85,12 +85,10 @@ class GestureRecognizer():
         return self.direction
 
     def addHandToGestureBuffer(self, hand):
-        if hand is not None:
-            self.handBuffer.appendleft(hand)
-        else:
-            self.handBuffer.clear()
+        self.handBuffer.appendleft(hand)
 
-
+    def clearBuffer(self):
+        self.handBuffer.clear()
 
     def getGesture(self):
         if len(self.handBuffer) > 10:
