@@ -1,17 +1,22 @@
 from tkinter import *
-
-import time
 import tkinter.messagebox as message
 import cv2
 import numpy
+import time
 from PIL import Image, ImageTk
-
 from ColorRangePickerClass import ColorRangePicker
 from EventClass import Event
 from FrameDrawingClass import FrameDrawing
 from GestureRecognitionClass import GestureRecognizer
 from HandRecognitionClass import HandRecognizer
+import platform
 
+if platform.system()[0:5] == "Linux":
+    from picamera.array import PiRGBArray
+    from picamera import PiCamera
+    systemIsWindows = False
+else:
+    systemIsWindows = True
 LITTLE_COLOR = 10
 default_camera = 0
 
@@ -21,7 +26,15 @@ class Controller:
         self.colorChangedEvent = Event()
         self.colorChangedEvent.append(self.onColorChanged)
         self.mainWindowRefresh = None
-        self.camera = cv2.VideoCapture(default_camera)
+        if systemIsWindows:
+            self.camera = cv2.VideoCapture(default_camera)
+        else:
+            self.camera = PiCamera()
+            self.camera.resolution = (320,240)
+            self.camera.framerate = 20
+            self.rawCapture = PiRGBArray(self.camera, size=(320, 240))
+            time.sleep(0.1)
+
         self.HandRecognizer = HandRecognizer()
         self.GestureRecognizer = GestureRecognizer()
         self.FrameDrawing = FrameDrawing()
@@ -59,13 +72,21 @@ class Controller:
             self.FrameDrawing.putText(frame, "No hand detected")
 
     def process_frame_loop(self):
-        _, frame = self.camera.read()
+        if systemIsWindows:
+            _, frame = self.camera.read()
+        else:
+            self.camera.capture(self.rawCapture, format="bgr", use_video_port=True)
+            frame = self.rawCapture.array
+
         if frame is not None:
             self._process_frame(frame)
             self.displayFrame(frame)
         else:
             message.showerror("Error", "No frame found")
-        self.mainWindowRefresh = self.imageContainer.after(10, self.process_frame_loop)
+
+        self.mainWindowRefresh = self.imageContainer.after_idle(self.process_frame_loop)
+        if not systemIsWindows:
+            self.rawCapture.truncate(0)
 
     def button_changeColorRange(self):
         ColorRangePicker(self.camera, self.colorChangedEvent)
@@ -103,5 +124,5 @@ if __name__ == "__main__":
     if not controller.camera_is_available():
         print("Kamera funktioniert nicht / keine Kamera gefunden. Programm zweimal gestartet?")
     else:
-        controller.window.after(10, controller.process_frame_loop)
+        controller.window.after(1, controller.process_frame_loop)
         controller.window.mainloop()
