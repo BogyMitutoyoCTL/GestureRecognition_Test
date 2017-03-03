@@ -5,7 +5,10 @@ import colorsys
 TODO: COMMENT
 """
 
-
+"""
+mapHSVTO255
+maps a HSV Color from (0-360, 0-100, 0-100) to (0-180, 0-255, 0-255)
+"""
 def mapHSVTO255(HSVColor):
     h = int(interp(HSVColor[0], [1, 360], [0, 179]))
     s = int(interp(HSVColor[1], [1, 100], [0, 255]))
