@@ -18,11 +18,11 @@ if not systemIsWindows:
     from picamera.array import PiRGBArray
     from picamera import PiCamera
 
+
 LITTLE_COLOR = 10
 default_camera = 0
 resolution = (640, 480)
 framerate = 15
-
 
 class Controller:
     def __init__(self):
@@ -31,6 +31,8 @@ class Controller:
         self.mainWindowRefresh = None
         if systemIsWindows:
             self.camera = cv2.VideoCapture(default_camera)
+            print(self.camera.get(cv2.CAP_PROP_FRAME_HEIGHT))
+            print(self.camera.get(cv2.CAP_PROP_FRAME_WIDTH))
         else:
             self.camera = PiCamera(resolution=resolution, framerate=framerate)
             self.rawCapture = PiRGBArray(self.camera, size=resolution)
@@ -75,6 +77,7 @@ class Controller:
             if self.Bluetoothplayer.Playing is True and not systemIsWindows:
                 self.Bluetoothplayer.pause()
             self.FrameDrawing.putText(frame, "No hand detected")
+            self.GestureRecognizer.clearBuffer()
 
     def getNextFrame(self):
         if systemIsWindows:
