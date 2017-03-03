@@ -57,12 +57,11 @@ class Controller:
                 self.FrameDrawing.drawGesture(frame, gesture)
         else:
             self.FrameDrawing.putText(frame, "No hand detected")
-        return frame
 
     def process_frame_loop(self):
         _, frame = self.camera.read()
         if frame is not None:
-            frame = self._process_frame(frame)
+            self._process_frame(frame)
             self.displayFrame(frame)
         else:
             message.showerror("Error", "No frame found")
