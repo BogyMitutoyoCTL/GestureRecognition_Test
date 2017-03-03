@@ -108,7 +108,7 @@ class Hand:
         self.center = center
         self.contour = contour
         self.area = area
-        self.timestamp = time()
+        self.timestamp = time.clock()
 
 
 if __name__ == "__main__":
