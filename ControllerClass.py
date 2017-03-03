@@ -1,35 +1,54 @@
 from tkinter import *
-import tkinter
-import time
 import tkinter.messagebox as message
 import cv2
 import numpy
+import time
 from PIL import Image, ImageTk
-
 from ColorRangePickerClass import ColorRangePicker
 from EventClass import Event
 from FrameDrawingClass import FrameDrawing
 from GestureRecognitionClass import GestureRecognizer
 from HandRecognitionClass import HandRecognizer
+import platform
+
+systemIsWindows = False if platform.system()[0:5] == "Linux" else True
+
+if not systemIsWindows:
+    from picamera.array import PiRGBArray
+    from picamera import PiCamera
+    from dbustest import Bluetoothplayer
+
 
 LITTLE_COLOR = 10
 default_camera = 0
-
+resolution = (640, 480)
+framerate = 15
 
 class Controller:
     def __init__(self):
         self.colorChangedEvent = Event()
+        self.gestureEvent = Event()
         self.colorChangedEvent.append(self.onColorChanged)
+        self.gestureEvent.append(self.onGestureRecognized)
         self.mainWindowRefresh = None
-        self.camera = cv2.VideoCapture(default_camera)
+        if systemIsWindows:
+            self.camera = cv2.VideoCapture(default_camera)
+            height = self.camera.get(cv2.CAP_PROP_FRAME_HEIGHT)
+            width = self.camera.get(cv2.CAP_PROP_FRAME_WIDTH)
+            self.resolution = (width, height)
+        else:
+            self.camera = PiCamera(resolution=resolution, framerate=framerate)
+            self.rawCapture = PiRGBArray(self.camera, size=resolution)
+            time.sleep(0.1)
+            self.Bluetoothplayer = Bluetoothplayer()
+
         self.HandRecognizer = HandRecognizer()
-        self.GestureRecognizer = GestureRecognizer()
+        self.GestureRecognizer = GestureRecognizer(self.resolution, self.gestureEvent)
         self.FrameDrawing = FrameDrawing()
         # UI-Elements:
         self.window = None
         self.colorPickerButton = None
         self.imageContainer = None
-
         self.initUI()
 
     def initUI(self):
@@ -50,22 +69,38 @@ class Controller:
     def _process_frame(self, frame):
         hand = self.HandRecognizer.getHand(frame)
         if hand is not None:
+            if not systemIsWindows and self.Bluetoothplayer.Playing:
+                self.Bluetoothplayer.play()
             self.FrameDrawing.drawHand(frame, hand)
             self.GestureRecognizer.addHandToGestureBuffer(hand)
             gesture = self.GestureRecognizer.getGesture()
             if gesture is not None and gesture.startpoint is not None and gesture.endpoint is not None:
                 self.FrameDrawing.drawGesture(frame, gesture)
         else:
+            if not systemIsWindows and self.Bluetoothplayer.Playing is True:
+                self.Bluetoothplayer.pause()
             self.FrameDrawing.putText(frame, "No hand detected")
+            self.GestureRecognizer.clearBuffer()
+
+    def getNextFrame(self):
+        if systemIsWindows:
+            _, frame = self.camera.read()
+        else:
+            self.camera.capture(self.rawCapture, format="bgr", use_video_port=True)
+            frame = self.rawCapture.array
+            self.rawCapture.truncate(0)
+        return frame
 
     def process_frame_loop(self):
-        _, frame = self.camera.read()
+        frame = self.getNextFrame()
+
         if frame is not None:
             self._process_frame(frame)
             self.displayFrame(frame)
         else:
             message.showerror("Error", "No frame found")
-        self.mainWindowRefresh = self.imageContainer.after(10, self.process_frame_loop)
+
+        self.mainWindowRefresh = self.imageContainer.after_idle(self.process_frame_loop)
 
     def button_changeColorRange(self):
         ColorRangePicker(self.camera, self.colorChangedEvent)
@@ -76,8 +111,21 @@ class Controller:
         self.HandRecognizer.filter.setColor(lowerColor, upperColor)
         self.process_frame_loop()
 
+    def onGestureRecognized(self, gestureName):
+        if not systemIsWindows:
+            if gestureName == "Play" and not Bluetoothplayer.Playing:
+                self.Bluetoothplayer.play()
+            if gestureName == "Pause" and Bluetoothplayer.Playing:
+                self.Bluetoothplayer.Pause()
+            if gestureName == "Previous":
+                self.Bluetoothplayer.prevTrack()
+            if gestureName == "Next":
+                self.Bluetoothplayer.nextTrack()
+        else:
+            print(gestureName)
+
     def camera_is_available(self):
-        _, image = self.camera.read()
+        image = self.getNextFrame()
 
         # If we do not get anything, probably no camera is connected
         if image is None:
@@ -97,12 +145,15 @@ class Controller:
             return True
         return False
 
-print(tkinter.TkVersion)
 
 if __name__ == "__main__":
     controller = Controller()
     if not controller.camera_is_available():
         print("Kamera funktioniert nicht / keine Kamera gefunden. Programm zweimal gestartet?")
     else:
-        controller.window.after_idle(controller.process_frame_loop)
+        if not systemIsWindows:
+            playerfound = controller.Bluetoothplayer.getPlayer()
+            if playerfound is not True:
+                print("no player was found")
+        controller.window.after(10, controller.process_frame_loop)
         controller.window.mainloop()

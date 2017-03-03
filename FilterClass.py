@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-
+import time
 """
 Filter Class
 Provides methods to filter and smooth picture of neon gloved hand.

@@ -14,6 +14,13 @@ from provided contour.
 
 
 class HandRecognizer:
+<<<<<<< HEAD
+=======
+    """
+    Constructor
+    Constructor initializes instance of FilterClass
+    """
+>>>>>>> 3a3e770d88321a5518df9891dabc35ca480e00f4
 
     def __init__(self):
         self.filter = Filter()
