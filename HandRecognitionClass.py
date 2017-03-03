@@ -1,6 +1,7 @@
 from collections import deque
 from FilterClass import *
 import cv2
+from time import time
 import sys
 import numpy as np
 
@@ -106,6 +107,7 @@ class Hand:
         self.center = center
         self.contour = contour
         self.area = area
+        self.timestamp = time()
 
 
 if __name__ == "__main__":
