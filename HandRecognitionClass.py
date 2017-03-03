@@ -16,9 +16,7 @@ from provided contour.
 class HandRecognizer:
     """
     Constructor
-    :param buffersize
-    Constructor initializes deque of size buffersize to track positional data for evaluation of
-    hand movement. Initially, deque is filled with zeroes only
+    Constructor initializes instance of FilterClass
     """
 
     def __init__(self):
@@ -33,6 +31,10 @@ class HandRecognizer:
                                                   cv2.CHAIN_APPROX_SIMPLE)
         return contours, hierarchy
 
+    """
+    _getIndexOfMaxContour
+    gets the index of the largest contour in the buffer
+    """
     @staticmethod
     def _getIndexOfMaxContour(contours):
         maxArea, index = 0, 0
@@ -43,6 +45,10 @@ class HandRecognizer:
                 index = i
         return index, maxArea
 
+    """
+    _isContourClosed
+    Check if Contour is closed, if not, no gesture will be detected
+    """
     @staticmethod
     def _isContourClosed(hierarchy, index):
         if hierarchy is not None:
@@ -50,9 +56,13 @@ class HandRecognizer:
         else:
             return False
 
+    """
+    _getHandCenter
+    get the center of the detected Hand. This is used to calculate movement.
+    """
     @staticmethod
     def _getHandCenter(handContour):
-        M = cv2.moments(handContour)
+        M = cv2.moments(handContour)            #Moments (Flächenträgsheitsmomente)
         (_, radius) = cv2.minEnclosingCircle(handContour)
         if M["m00"] != 0:
             center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
