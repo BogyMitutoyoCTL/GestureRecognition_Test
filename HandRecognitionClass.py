@@ -12,12 +12,6 @@ from provided contour.
 
 
 class HandRecognizer:
-    """
-    Constructor
-    :param buffersize
-    Constructor initializes deque of size buffersize to track positional data for evaluation of
-    hand movement. Initially, deque is filled with zeroes only
-    """
 
     def __init__(self):
         self.filter = Filter()

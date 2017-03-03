@@ -56,6 +56,12 @@ class Filter:
     def _reduceNoise(self):
         med_blur_frame = cv2.medianBlur(self.neon_masked_frame, 15)  # Blur resulting masked Frame
         _, blur_frame_thresh = cv2.threshold(med_blur_frame, 0, 255, cv2.THRESH_BINARY)
+
+        
+        xsize = blur_frame_thresh[0].size
+        ysize = int(blur_frame_thresh.size / xsize)
+        black = (0, 0, 0)
+        cv2.rectangle(blur_frame_thresh, (0,0), (xsize-1, ysize-1), black, 10)
         self.blur_frame_thresh = cv2.cvtColor(blur_frame_thresh, cv2.COLOR_BGR2GRAY)
 
     """

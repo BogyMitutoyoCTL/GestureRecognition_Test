@@ -1,5 +1,5 @@
 from tkinter import *
-
+import tkinter
 import time
 import tkinter.messagebox as message
 import cv2
@@ -97,11 +97,12 @@ class Controller:
             return True
         return False
 
+print(tkinter.TkVersion)
 
 if __name__ == "__main__":
     controller = Controller()
     if not controller.camera_is_available():
         print("Kamera funktioniert nicht / keine Kamera gefunden. Programm zweimal gestartet?")
     else:
-        controller.window.after(10, controller.process_frame_loop)
+        controller.window.after_idle(controller.process_frame_loop)
         controller.window.mainloop()
