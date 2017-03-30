@@ -23,19 +23,20 @@ if not systemIsWindows:
             for path, ifaces in self.objects.items():
                 if "org.bluez.MediaPlayer1" in ifaces:
                     self.player_path = path
+                    print("hallo")
                     self.player = self.bus.get_object("org.bluez", self.player_path)
                     return True
             return False
 
         def play(self):
-            if self.player_path and self.Playing is False:
+            if self.player_path:
                 self.player.Play(dbus_interface="org.bluez.MediaPlayer1")
                 self.Playing = True
             else:
                 print("No media player found. Check Bluetooth connection")
 
         def pause(self):
-            if self.player_path and self.Playing is True:
+            if self.player_path:
                 self.player.Pause(dbus_interface="org.bluez.MediaPlayer1")
                 self.Playing = False
             else:

@@ -21,7 +21,7 @@ if not systemIsWindows:
 
 LITTLE_COLOR = 10
 default_camera = 0
-resolution = (640, 480)
+resolution = (320, 240)
 framerate = 15
 
 class Controller:
@@ -32,10 +32,11 @@ class Controller:
         self.gestureEvent.append(self.onGestureRecognized)
         self.mainWindowRefresh = None
         if systemIsWindows:
+            global resolution
             self.camera = cv2.VideoCapture(default_camera)
             height = self.camera.get(cv2.CAP_PROP_FRAME_HEIGHT)
             width = self.camera.get(cv2.CAP_PROP_FRAME_WIDTH)
-            self.resolution = (width, height)
+            resolution = (width, height)
         else:
             self.camera = PiCamera(resolution=resolution, framerate=framerate)
             self.rawCapture = PiRGBArray(self.camera, size=resolution)
@@ -43,7 +44,7 @@ class Controller:
             self.Bluetoothplayer = Bluetoothplayer()
 
         self.HandRecognizer = HandRecognizer()
-        self.GestureRecognizer = GestureRecognizer(self.resolution, self.gestureEvent)
+        self.GestureRecognizer = GestureRecognizer(resolution, self.gestureEvent)
         self.FrameDrawing = FrameDrawing()
         # UI-Elements:
         self.window = None
@@ -69,16 +70,12 @@ class Controller:
     def _process_frame(self, frame):
         hand = self.HandRecognizer.getHand(frame)
         if hand is not None:
-            if not systemIsWindows and self.Bluetoothplayer.Playing:
-                self.Bluetoothplayer.play()
             self.FrameDrawing.drawHand(frame, hand)
             self.GestureRecognizer.addHandToGestureBuffer(hand)
             gesture = self.GestureRecognizer.getGesture()
             if gesture is not None and gesture.startpoint is not None and gesture.endpoint is not None:
                 self.FrameDrawing.drawGesture(frame, gesture)
         else:
-            if not systemIsWindows and self.Bluetoothplayer.Playing is True:
-                self.Bluetoothplayer.pause()
             self.FrameDrawing.putText(frame, "No hand detected")
             self.GestureRecognizer.clearBuffer()
 
@@ -113,10 +110,10 @@ class Controller:
 
     def onGestureRecognized(self, gestureName):
         if not systemIsWindows:
-            if gestureName == "Play" and not Bluetoothplayer.Playing:
+            if gestureName == "Play" and not self.Bluetoothplayer.Playing:
                 self.Bluetoothplayer.play()
-            if gestureName == "Pause" and Bluetoothplayer.Playing:
-                self.Bluetoothplayer.Pause()
+            if gestureName == "Pause" and self.Bluetoothplayer.Playing:
+                self.Bluetoothplayer.pause()
             if gestureName == "Previous":
                 self.Bluetoothplayer.prevTrack()
             if gestureName == "Next":
